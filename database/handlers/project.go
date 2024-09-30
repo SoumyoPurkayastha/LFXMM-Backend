@@ -14,12 +14,11 @@ import (
  */
 func (client Client) GetProjectsByFilter(filterText string) ([]database.ProjectThumbnail, error) {
 	rowsRs, err := client.Query(`
-		SELECT id, name, description, programYear, programTerm 
-		FROM projects 
-		WHERE name LIKE '%$1%' OR description LIKE '%$1$'
-		ORDER BY name;
-		`, filterText)
-
+    SELECT id, lfxProjectId, name, description, programYear, programTerm, skills 
+    FROM projects 
+    WHERE name LIKE '%' || $1 || '%' OR description LIKE '%' || $1 || '%'
+    ORDER BY name;
+`, filterText)
 	if err != nil {
 		fmt.Println("[ERROR] GetProjectsByFilter query failed")
 		fmt.Println(err)
@@ -309,6 +308,7 @@ func parseAsProjectThumbnailSlice(rowsRs *sql.Rows) ([]database.ProjectThumbnail
 
 		if err != nil {
 			fmt.Println("[ERROR] Can't save to ProjectThumbnail struct")
+			fmt.Println(err)
 			return nil, err
 		}
 
