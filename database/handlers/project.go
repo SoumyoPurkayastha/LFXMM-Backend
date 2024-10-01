@@ -13,12 +13,14 @@ import (
  * Get all the project (thumbnails) whose `name` or `description` matches the provided `filterText`
  */
 func (client Client) GetProjectsByFilter(filterText string) ([]database.ProjectThumbnail, error) {
-	rowsRs, err := client.Query(`
+	queryStmt:=`
     SELECT id, lfxProjectId, name, description, programYear, programTerm, skills 
     FROM projects 
     WHERE name LIKE '%' || $1 || '%' OR description LIKE '%' || $1 || '%'
     ORDER BY name;
-`, filterText)
+`
+	
+	rowsRs, err := client.Query(queryStmt, filterText)
 	if err != nil {
 		fmt.Println("[ERROR] GetProjectsByFilter query failed")
 		fmt.Println(err)
